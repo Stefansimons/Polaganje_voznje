@@ -1,0 +1,25 @@
+<%@page import="models.Kandidat"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="dao.DAO"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<%
+DAO dao=new DAO();
+
+ArrayList<Kandidat> lk=dao.selectKandidati();
+%>
+
+ <%
+	for(Kandidat k:lk){
+%>		
+	<%=k.toString()  %>
+<% }%>  
+</body>
+</html>
