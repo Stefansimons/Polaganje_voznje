@@ -9,11 +9,13 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import controllers.Polaganje;
 import models.Kandidat;
 import models.KandidatKategorija;
 import models.Odgovor;
 import models.Pitanje;
 import models.PitanjeOdgovor;
+import models.Test;
 
 import java.util.ArrayList;
 public class DAO {
@@ -39,6 +41,11 @@ public class DAO {
 	
 	//ODGOVORI:
 	private static String GETODGOVORI="SELECT * FROM odgovori";
+	private static String GETODGOVORBYID="SELECT * FROM odgovori WHERE odgovorID=?";
+	//POLAGANJE TESTA;
+	private static String GETRANDOMPITANJABYKATEGORIJAID=" SELECT * FROM pitanja WHERE IDkategorije=? ORDER BY RAND() LIMIT 10";
+	private static String INSERTPOLAGANJE=" INSERT INTO  polaganja(polaganjeID,kandidatID,pitanjeID,odgovor_kandidata) VALUES (?,?,?,?)";
+	private static String GETPOLAGANJEBYKANDIDATID="SELECT * FROM polaganja WHERE kandidatID=?";
 	// DEFINICIJA KONSTRUKTORA ZA PODESAVNJE KONEKCIJE – UVEK ISTO
 	public DAO(){
 	try {
@@ -138,6 +145,47 @@ public class DAO {
 		// VRACANJE REZULTATA AKO METODA VRACA REZULTAT
 		return lo; 
 	}
+	public Odgovor getOdgovorByID(int pitanjeID){
+		Connection con = null;
+		PreparedStatement pstm = null;
+		ResultSet rs = null;
+		// POMOCNE PROMENLJIVE ZA KONKRETNU METODU 
+	
+		Odgovor pom = null;
+				
+         try {
+			con = ds.getConnection();
+			pstm = con.prepareStatement(GETODGOVORBYID);
+
+			// DOPUNJAVANJE SQL STRINGA, SVAKI ? SE MORA PODESITI 
+			pstm.setInt(1, pitanjeID);
+			pstm.execute();
+
+//****POCETAK AKO UPIT VRACA REZULTAT TREBA SLEDECI DEO 
+			rs = pstm.getResultSet();
+
+			if(rs.next()){ // if UMESTO while AKO UPIT VRACA JEDAN REZULTAT
+					pom = new Odgovor();
+					pom.setOdgovorID(rs.getInt("odgovorID"));
+					pom.setOdgovor(rs.getString("odgovor"));
+					pom.setPitanjeID(rs.getInt("pitanjeID"));
+					pom.setTacan_odgovor(rs.getString("tacan_odgovor"));
+					
+					// DODAVANJE INSTANCE U LISTU AKO METODA VRACA LISTU, AKO NE VRACA ONDA NE TREBA 
+					
+			}
+//****KRAJ OBRADE ResultSet-a	
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		// VRACANJE REZULTATA AKO METODA VRACA REZULTAT
+		return pom; 
+	}
 	public ArrayList<Pitanje> getPitanjaByKategorijaID(int kategorijaID){
 		Connection con = null;
 		PreparedStatement pstm = null;
@@ -166,6 +214,94 @@ public class DAO {
 				pom.setBroj_bodova(rs.getInt("broj_bodova"));
 				pom.setKategorijaID(rs.getInt("IDkategorije"));
 				pom.setUrl_slike(rs.getString("url_slike"));
+				// DODAVANJE INSTANCE U LISTU AKO METODA VRACA LISTU, AKO NE VRACA ONDA NE TREBA 
+				lp.add(pom);
+			}
+//****KRAJ OBRADE ResultSet-a	
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		// VRACANJE REZULTATA AKO METODA VRACA REZULTAT
+		return lp; 
+	}
+	public ArrayList<Pitanje> get10RandomPitanjaByKategorijaID(int kategorijaID){
+		Connection con = null;
+		PreparedStatement pstm = null;
+		ResultSet rs = null;
+		// POMOCNE PROMENLJIVE ZA KONKRETNU METODU 
+		ArrayList<Pitanje> lp = new ArrayList<Pitanje>();
+		Pitanje pom = null;
+				
+         try {
+			con = ds.getConnection();
+			pstm = con.prepareStatement(GETRANDOMPITANJABYKATEGORIJAID);
+
+			// DOPUNJAVANJE SQL STRINGA, SVAKI ? SE MORA PODESITI 
+			pstm.setInt(1, kategorijaID);
+			pstm.execute();
+
+//****POCETAK AKO UPIT VRACA REZULTAT TREBA SLEDECI DEO 
+			rs = pstm.getResultSet();
+
+			while(rs.next()){ // if UMESTO while AKO UPIT VRACA JEDAN REZULTAT
+				// KREIRANJE INSTANCE KLASE PREKO PODRAZUMEVANOG KONSTRUKTORA
+				pom = new Pitanje();
+				// SET-OVANJE SVIH ATRIBUTA KLASE SA ODGOVARAJUCIM VREDNOSTIMA IZ RESULTSET-A rs
+				pom.setPitanjeID(rs.getInt("pitanjeID"));
+				pom.setPitanje(rs.getString("pitanje"));
+				pom.setBroj_bodova(rs.getInt("broj_bodova"));
+				pom.setKategorijaID(rs.getInt("IDkategorije"));
+				pom.setUrl_slike(rs.getString("url_slike"));
+				// DODAVANJE INSTANCE U LISTU AKO METODA VRACA LISTU, AKO NE VRACA ONDA NE TREBA 
+				lp.add(pom);
+			}
+//****KRAJ OBRADE ResultSet-a	
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		// VRACANJE REZULTATA AKO METODA VRACA REZULTAT
+		return lp; 
+	}
+	public ArrayList<Test> getPolaganjeByKandidatID(int kandidatID){
+		Connection con = null;
+		PreparedStatement pstm = null;
+		ResultSet rs = null;
+		// POMOCNE PROMENLJIVE ZA KONKRETNU METODU 
+		ArrayList<Test> lp = new ArrayList<Test>();
+		Test pom = null;
+				
+         try {
+			con = ds.getConnection();
+			pstm = con.prepareStatement(GETPOLAGANJEBYKANDIDATID);
+
+			// DOPUNJAVANJE SQL STRINGA, SVAKI ? SE MORA PODESITI 
+			pstm.setInt(1, kandidatID);
+			pstm.execute();
+
+//****POCETAK AKO UPIT VRACA REZULTAT TREBA SLEDECI DEO 
+			rs = pstm.getResultSet();
+
+			while(rs.next()){ // if UMESTO while AKO UPIT VRACA JEDAN REZULTAT
+				// KREIRANJE INSTANCE KLASE PREKO PODRAZUMEVANOG KONSTRUKTORA
+				pom=new Test();
+			
+				// SET-OVANJE SVIH ATRIBUTA KLASE SA ODGOVARAJUCIM VREDNOSTIMA IZ RESULTSET-A rs
+				pom.setPitanjeID(rs.getInt("pitanjeID"));
+				pom.setKandidatID(rs.getInt("kandidatID"));
+				pom.setPolaganjeID(rs.getInt("polaganjeID"));
+				pom.setDatum_polaganja(rs.getTimestamp("datum_polaganja"));
+				pom.setOdgovor(rs.getString("odgovor_kandidata"));
+				
 				// DODAVANJE INSTANCE U LISTU AKO METODA VRACA LISTU, AKO NE VRACA ONDA NE TREBA 
 				lp.add(pom);
 			}
@@ -446,6 +582,38 @@ public class DAO {
 		}
 		// VRACANJE REZULTATA AKO METODA VRACA REZULTAT
 		return lo; 
+	}
+	public void insertPolaganje(int polaganjeID,int kandidatID,int pitanjeID,String odgovor){
+		Connection con = null;
+		PreparedStatement pstm = null;
+		
+		// POMOCNE PROMENLJIVE ZA KONKRETNU METODU 
+		ArrayList<Odgovor> lo=new ArrayList<>();
+		Odgovor pom = null;
+				
+         try {
+			con = ds.getConnection();
+			pstm = con.prepareStatement(INSERTPOLAGANJE);
+
+			// DOPUNJAVANJE SQL STRINGA, SVAKI ? SE MORA PODESITI 
+			pstm.setInt(1, polaganjeID);
+			pstm.setInt(2, kandidatID);
+			pstm.setInt(3, pitanjeID);
+			pstm.setString(4, odgovor);
+			
+			pstm.execute();
+			System.out.println("ubaceno polaganje u bazu");
+
+	
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	// DEFINICIJA OSTALIH METODA ... 
 }

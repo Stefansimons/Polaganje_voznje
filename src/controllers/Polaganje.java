@@ -16,6 +16,7 @@ import models.KandidatKategorija;
 import models.Odgovor;
 import models.Pitanje;
 import models.PitanjeOdgovor;
+import models.Test;
 
 
 @WebServlet("/Polaganje")
@@ -88,6 +89,11 @@ public class Polaganje extends HttpServlet {
 					}
 					
 				}else if(akcija.equals("test"))
+			/*		ArrayList<Pitanje> lp=null;
+					//ArrayList<Test> =new ArrayList<>();
+					//ArrayList<Test> polaganje=dao.getPolaganjeByKandidatID(kanid);
+				ArrayList<Pitanje> lp=dao.get10RandomPitanjaByKategorijaID(ulogovani.getKategorijaID());
+			*/	
 				{
 					
 				}else if(akcija.equals("prijava"))

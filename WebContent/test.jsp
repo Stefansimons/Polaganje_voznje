@@ -38,7 +38,7 @@
 <!-- <link rel="stylesheet" type="text/css" href="css/aaa.css"> -->
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Pitanja</title>
+<title>Test</title>
 </head>
 <body style="background: LightGray">
 <%-- <%for(Odgovor o:odgovori){ if(o.getPitanjeID()==1 && o.getTacan_odgovor().equals("tačan")){ %>
@@ -52,10 +52,10 @@
       <li class="nav-item ">
         <a class="nav-link "  href="pocetna.jsp" >kandidat </a>
       </li>
-      <li class="nav-item active">
+      <li class="nav-item ">
         <a class="nav-link " href="Polaganje?ID=<%=ulogovani.getKandidatID()%>&akcija=ucenje&str=1">pitanja</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item active" >
         <a class="nav-link " href="Polaganje?ID=<%=ulogovani.getKandidatID()%>&akcija=test">test</a>
       </li>
        <li class="nav-item">
