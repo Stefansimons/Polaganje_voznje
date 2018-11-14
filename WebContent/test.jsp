@@ -12,20 +12,7 @@
  if(ulogovani!=null){
 		ArrayList<Odgovor> odgovori=(ArrayList)sesija.getAttribute("odgovori");
 		ArrayList<Pitanje> pitanja=(ArrayList)sesija.getAttribute("pitanja");
-		int trenutnaStrana=(Integer)request.getAttribute("trenutnaStrana");
-		int ukupnoStrana=(Integer)request.getAttribute("ukupnoStrana");
-		int redovaPoStrani=(Integer)request.getAttribute("redovaPoStrani");
-	/* System.out.println("trenutna strana je:"+trenutnaStrana);
-	System.out.println("ukupno strana ima:"+ukupnoStrana);
-	System.out.println("broj redova po strani je:"+redovaPoStrani);
-	System.out.println("ukupno redova liste lp na strani pitanja jsp:"+pitanja.size());
-	/* for(Pitanje p:pitanja)
-	{
-		if(p.getPitanjeID()==1)
-		{
-			System.out.println(p.toString());
-		}
-	} */ 
+	
 	
 
  %>
@@ -68,6 +55,7 @@
     </form>
   </div>
 </nav>
+<form action="Polaganje" method="post">
 	<table class="table table-sm" >
 		<thread>
 			<tr>
@@ -87,24 +75,9 @@
 					<td><c:forEach var="odgovor" items="${odgovori}">
 							<ul>
 								<c:if test="${odgovor.pitanjeID == pitanje.pitanjeID}">
-									<c:choose>
-
-										<c:when test="${odgovor.tacan_odgovor.equals('tačan')}">
-
-											<li style="color: red;"><c:out
-													value="${odgovor.odgovor} " /></li>
-
-
-										</c:when>
-										<c:otherwise>
-											<li style="color: black;"><c:out
-													value="${odgovor.odgovor} " /></li>
-										</c:otherwise>
-
-										<%-- <span style="color: red;"> <c:out value=" ${odgovor.tacan_odgovor}" /></span><br> --%>
-
-
-									</c:choose>
+									
+										<input type="radio" name="${odgovor.pitanjeID}" value="${odgovor.tacan_odgovor}">${odgovor.odgovor} 
+									
 
 								</c:if>
 							</ul>
@@ -115,36 +88,15 @@
 				</tr>
 
 			</c:forEach>
+			<tr>
+				<td></td>
+				<td><input type="submit" value="Posalji"></td>
+				<th colspan="2"></th>
+			</tr>
 		</tbody>
 	</table>
-	<nav aria-label="Navigation for pitanja ">
-		<ul class="pagination">
-			<c:if test="${trenutnaStrana!= 1}">
-				<li class="page-item"><a class="page-link"
-					href="Polaganje?ID=<%=ulogovani.getKandidatID()%>&akcija=ucenje&str=${trenutnaStrana-1}">Prethodna</a>
-				</li>
-			</c:if>
-
-			<c:forEach begin="1" end="${ukupnoStrana}" var="i">
-				<c:choose>
-					<c:when test="${trenutnaStrana eq i}">
-						<li class="page-item active"><a class="page-link">${i}<span
-								lass="sr-only"></span></a></li>
-					</c:when>
-					<c:otherwise>
-						<li class="page-item"><a class="page-link"
-							href="Polaganje?ID=<%=ulogovani.getKandidatID()%>&akcija=ucenje&str=${i}">${i}</a>
-						</li>
-					</c:otherwise>
-				</c:choose>
-			</c:forEach>
-			<c:if test="${trenutnaStrana lt ukupnoStrana}">
-				<li class="page-item"><a class="page-link"
-					href="Polaganje?ID=<%=ulogovani.getKandidatID()%>&akcija=ucenje&str=${trenutnaStrana+1}">sledeća</a>
-				</li>
-			</c:if>
-		</ul>
-	</nav>
+</form>
+	
 </body>
 </html>
 <%

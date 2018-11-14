@@ -42,7 +42,7 @@ public class Polaganje extends HttpServlet {
 				DAO dao=new DAO();
 				HttpSession sesija=request.getSession();
 				KandidatKategorija ulogovani=(KandidatKategorija)sesija.getAttribute("ulogovani");
-			
+				//ArrayList<Pitanje> lp=new ArrayList<>();
 				if(akcija.equals("ucenje"))
 				{
 					if(broj_strane!=null && broj_strane.length()>0 )
@@ -88,17 +88,49 @@ public class Polaganje extends HttpServlet {
 						response.sendRedirect("404 error.html");
 					}
 					
-				}else if(akcija.equals("test"))
-			/*		ArrayList<Pitanje> lp=null;
-					//ArrayList<Test> =new ArrayList<>();
-					//ArrayList<Test> polaganje=dao.getPolaganjeByKandidatID(kanid);
-				ArrayList<Pitanje> lp=dao.get10RandomPitanjaByKategorijaID(ulogovani.getKategorijaID());
-			*/	
-				{
-					
 				}else if(akcija.equals("prijava"))
+			
+						//ArrayList<Test> =new ArrayList<>();
+					//
+			
 				{
 					
+				}else if(akcija.equals("test"))
+				{	
+					ArrayList<Test> polaganje=dao.getPolaganjeByKandidatID(kanid);
+					if(polaganje==null && polaganje.size()==0)
+					{
+						ArrayList<Pitanje> lp=dao.get10RandomPitanjaByKategorijaID(ulogovani.getKategorijaID());
+						ArrayList<Odgovor> odgovori=dao.getOdgovori();
+						ArrayList<Odgovor> listaOdgovoraZaSvaPitanja=new ArrayList<>();
+						for(Pitanje p:lp)
+						{
+							ArrayList<Odgovor> lo=dao.getOdgovoriByPitanjeID(p.getPitanjeID());
+							for(Odgovor o:lo)
+							{
+								listaOdgovoraZaSvaPitanja.add(o);
+							}
+						}
+						sesija.setAttribute("pitanja", lp);
+						sesija.setAttribute("odgovori", listaOdgovoraZaSvaPitanja);
+					
+						request.getRequestDispatcher("test.jsp").forward(request, response);
+	
+					}else
+					{
+						boolean polozen=dao.polozenTestByKandidatID(kanid);
+						if(polozen==true)
+						{
+							request.setAttribute("msg", "Polozili ste test!");
+							request.getRequestDispatcher("test.jsp").forward(request, response);
+						}else
+						{
+							request.setAttribute("msg", "Niste polozili test,javite se administratoru za novu priliku");
+							request.getRequestDispatcher("test.jsp").forward(request, response);
+						}
+						
+					}
+
 				}else {
 					response.sendRedirect("404 error.html");
 				}

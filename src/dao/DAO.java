@@ -43,6 +43,7 @@ public class DAO {
 	private static String GETODGOVORI="SELECT * FROM odgovori";
 	private static String GETODGOVORBYID="SELECT * FROM odgovori WHERE odgovorID=?";
 	//POLAGANJE TESTA;
+	private static String POLOZENTEST="SELECT COUNT(polaganjeID) FROM polaganja WHERE kandidatID=? AND odgovor_kandidata='tacan'";
 	private static String GETRANDOMPITANJABYKATEGORIJAID=" SELECT * FROM pitanja WHERE IDkategorije=? ORDER BY RAND() LIMIT 10";
 	private static String INSERTPOLAGANJE=" INSERT INTO  polaganja(polaganjeID,kandidatID,pitanjeID,odgovor_kandidata) VALUES (?,?,?,?)";
 	private static String GETPOLAGANJEBYKANDIDATID="SELECT * FROM polaganja WHERE kandidatID=?";
@@ -316,6 +317,53 @@ public class DAO {
 		}
 		// VRACANJE REZULTATA AKO METODA VRACA REZULTAT
 		return lp; 
+	}
+	public boolean polozenTestByKandidatID(int kandidatID){
+		Connection con = null;
+		PreparedStatement pstm = null;
+		ResultSet rs = null;
+		// POMOCNE PROMENLJIVE ZA KONKRETNU METODU 
+		ArrayList<Test> lp = new ArrayList<Test>();
+		Test pom = null;
+			boolean polozen=false;	
+			int br;
+         try {
+			con = ds.getConnection();
+			pstm = con.prepareStatement(POLOZENTEST);
+
+			// DOPUNJAVANJE SQL STRINGA, SVAKI ? SE MORA PODESITI 
+			pstm.setInt(1, kandidatID);
+			pstm.execute();
+
+//****POCETAK AKO UPIT VRACA REZULTAT TREBA SLEDECI DEO 
+			rs = pstm.getResultSet();
+
+			if(rs.next()){ // if UMESTO while AKO UPIT VRACA JEDAN REZULTAT
+				// KREIRANJE INSTANCE KLASE PREKO PODRAZUMEVANOG KONSTRUKTORA
+				
+				br=rs.getInt("COUNT(polaganjeID)");
+				if(br>=8)
+				{
+					polozen=true;
+					
+				}else
+				{
+					polozen=false;
+					
+				}
+					
+			}
+//****KRAJ OBRADE ResultSet-a	
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		// VRACANJE REZULTATA AKO METODA VRACA REZULTAT
+		return polozen;
 	}
 	public ArrayList<Pitanje> getPitanjaByPage(int kategorijaID,int trenutnaStrana,int redovaPoStrani){
 		Connection con = null;
